@@ -6,6 +6,7 @@ public class User {
     private String email;
     private String password;
     private int age;
+    public boolean isVerified;
 
     public User(int id, String name, String email, String password,int age) {
         this.id = id;
@@ -13,6 +14,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.age = age;
+        this.isVerified = false;
 
 
     }
@@ -58,5 +60,11 @@ public class User {
     }
 
 
+    public Object isVerified() {
+        return isVerified;
+    }
+    public void setVerified(boolean verified) {
+        this.isVerified = verified;
+    }
 }
 
