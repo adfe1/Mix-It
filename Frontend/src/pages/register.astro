@@ -1,3 +1,39 @@
 ---
 
+import MixItLayout from "../layouts/MixIt-Layout.astro";
+import {SITE_DESCRIPTION, SITE_TITLE} from "../consts";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import BaseHead from "../components/BaseHead.astro";
 ---
+<MixItLayout
+        title="Login"
+        description="Login-page"
+
+>
+    <html lang="en">
+    <body>
+    <main>
+        <div class="Login">
+            <h4>E-mail:</h4>
+            <textarea class="Login-Name">
+
+            </textarea>
+            <h4>Password:</h4>
+            <textarea class="Passwort">
+
+            </textarea>
+            <h4>Password:</h4>
+            <textarea class="Passwort">
+
+            </textarea>
+
+            <button>
+                Register
+            </button>
+        </div>
+    </main>
+    </body>
+    </html>
+
+</MixItLayout>

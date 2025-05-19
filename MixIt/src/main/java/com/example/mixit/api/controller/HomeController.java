@@ -21,18 +21,19 @@ public class HomeController {
     public String login() {
         return "login.html";
     }
+
     @RequestMapping("/search")
     public String search() {
         return "search.html";
     }
+
     @RequestMapping("/register")
     public String register( ) {
-
         return "register.html";
     }
+
     @RequestMapping("/account")
     public String account(Model model) {
-
         return "account.html";
     }
 }
