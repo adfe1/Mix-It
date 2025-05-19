@@ -1,9 +1,11 @@
 services:
-  database:
-    image: 'postgres:15.2'
-    ports:
-      - '5432:5432'
+  mysql:
+    image: mysql:latest
+    container_name: guide-mysql
     environment:
-      - POSTGRES_USER=myuser
-      - POSTGRES_DB=mydatabase
-      - POSTGRES_PASSWORD=secret
+      - MYSQL_DATABASE=mydatabase
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=verysecret
+    ports:
+      - "3306:3306"

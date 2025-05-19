@@ -16,6 +16,7 @@ public class User {
 
 
     }
+
     public int getId() {
         return id;
     }
@@ -47,9 +48,11 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
     public int getAge() {
         return age;
     }
+
     public void setAge(int age) {
         this.age = age;
     }
