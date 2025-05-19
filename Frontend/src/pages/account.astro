@@ -1,3 +1,60 @@
 ---
-
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
+
+<!doctype html>
+<html lang="en">
+<head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION}/>
+</head>
+<body>
+<Header />
+<main>
+    <div class="account-Info">
+        <h1>Your Account:</h1>
+        <p>Name: {}</p>
+        <p>E-mail:{}</p>
+        <p>Age:{}</p>
+        <p>Passwort:{}</p>
+    </div>
+    <div class="butto">
+        <button type="button" name="reset-Password">
+            Reset Password
+        </button>
+        <button type="button" name="Logout">
+            Logout
+        </button>
+    </div>
+
+</main>
+<Footer />
+</body>
+</html>
+
+<style>
+    body{
+        align-content: center;
+    }
+    .butto button{
+        padding: 0.7rem 1.2rem;
+        border: 2px solid #5a77e2;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #5a77e2 60%, #7e9be6 100%);
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.08rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.2s, color 0.2s;
+        box-shadow: none;
+     }
+    .button:hover{
+        background: #e6edfa;
+        color: #223;
+    }
+
+</style>

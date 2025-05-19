@@ -6,25 +6,84 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import MixItLayout from "../layouts/MixIt-Layout.astro";
 ---
 <MixItLayout
-	description="MixIt"
-
->
-<!doctype html>
-<html lang="en">
+	title="Welcome to MixIT!"
+	description="MixIt">
+	<!doctype html>
+	<html lang="en">
 	<body>
-		<main>
-			<h1>Welcome to MixIT!!</h1>
-
-			<p>
-				Your site if you want to know which Cocktail you can mix with the Ingredients you have .
-			</p>
-
-			<div class="Pictures">
-				<img src="/src/content/assets/cocktail_1.jpeg">
-				<img src="/src/content/assets/Cocktail_2.jpg"/>
+	<p>Your site if you want to know which Cocktail you can mix with the Ingredients you have.</p>
+	<main>
+		<section class="content">
+			<div class="pictures">
+				<img src="/src/content/assets/cocktail_1.jpeg" alt="Cocktail 1" />
+				<img src="/src/content/assets/Cocktail_2.jpg" alt="Cocktail 2" />
 			</div>
-
-		</main>
+		</section>
+	</main>
 	</body>
-</html>
+	</html>
 </MixItLayout>
+
+<style>
+	body {
+		margin: 0;
+		font-family: 'Inter', Arial, sans-serif;
+		background: #f8fafc;
+		color: #22223b;
+	}
+
+	.content {
+		max-width: 700px;
+		margin: 4rem auto 2rem auto;
+		padding: 0 1rem;
+		text-align: center;
+	}
+
+	h1 {
+		font-size: 2.8rem;
+		font-weight: 800;
+		margin-bottom: 0.5rem;
+		letter-spacing: 2px;
+	}
+
+	.brand {
+		color: #5a77e2;
+	}
+
+	p {
+		font-size: 1.2rem;
+		color: #4a4e69;
+		margin-bottom: 2.5rem;
+	}
+
+	.pictures {
+		display: flex;
+		justify-content: center;
+		gap: 2rem;
+		flex-wrap: wrap;
+	}
+
+	.pictures img {
+		width: 280px;
+		height: 280px;
+		object-fit: cover;
+		border-radius: 20px;
+		box-shadow: 0 6px 24px rgba(90,119,226,0.15);
+		border: 2px solid #e2e8f0;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		cursor: pointer;
+	}
+
+	.pictures img:hover {
+		transform: scale(1.05) rotate(-2deg);
+		box-shadow: 0 12px 36px rgba(90,119,226,0.3);
+	}
+
+	@media (max-width: 650px) {
+		.pictures img {
+			width: 90vw;
+			height: auto;
+			max-height: 220px;
+		}
+	}
+</style>
