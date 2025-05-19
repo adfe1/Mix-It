@@ -16,7 +16,7 @@ public class CocktailController {
     }
 
     @GetMapping("/cocktails")
-    public Mono<String> getCocktails(@RequestParam(defaultValue = "randomselection.php") String letter) {
+    public Mono<String> getCocktails(@RequestParam(defaultValue = "a") String letter) {
         return cocktailService.fetchCocktailsByFirstLetter(letter);
     }
 }
