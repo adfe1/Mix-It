@@ -3,6 +3,8 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+const response = await fetch("http://localhost:8080/api/Users");
+const users = await response.json();
 ---
 
 <!doctype html>
@@ -20,6 +22,9 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
         <p>Age:{}</p>
         <p>Passwort:{}</p>
     </div>
+    <ul>
+        {users.map(Users => <li>{Users.name} ({Users.email})</li>)}
+    </ul>
     <div class="butto">
         <button type="button" name="reset-Password">
             Reset Password
