@@ -6,15 +6,16 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class CocktailService {
-    private final WebClient webClient = WebClient.create("www.thecocktaildb.com/api/json/v1/1");
+
+    private final WebClient webClient = WebClient.create("https://www.thecocktaildb.com/api/json/v1/1");
 
     public Mono<String> fetchCocktailsByFirstLetter(String letter) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/search.php")
-                        .queryParam("i"+letter)
+                        .queryParam("f", letter) // <-- RICHTIG
                         .build())
                 .retrieve()
-                .bodyToMono(String.class); // Für den Anfang als String, später DataResponse.class
+                .bodyToMono(String.class);
     }
 }

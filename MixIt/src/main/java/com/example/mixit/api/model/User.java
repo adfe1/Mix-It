@@ -1,70 +1,50 @@
 package com.example.mixit.api.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "users")
 public class User {
-    private int id;
+
+    @Id
+    private String id;
     private String name;
     private String email;
-    private String password;
     private int age;
-    public boolean isVerified;
+    private String password;
+    private boolean verified;
 
-    public User(int id, String name, String email, String password,int age) {
+    public User() {
+        this.id = java.util.UUID.randomUUID().toString();
+    }
+
+    public User(String id, String name, String email, int age, String password, boolean verified) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
         this.age = age;
-        this.isVerified = false;
-
-
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
+        this.verified = verified;
     }
 
-    public int getAge() {
-        return age;
-    }
+    // Getters & Setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public void setAge(int age) {
-        this.age = age;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public Object isVerified() {
-        return isVerified;
-    }
-    public void setVerified(boolean verified) {
-        this.isVerified = verified;
-    }
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public boolean isVerified() { return verified; }
+    public void setVerified(boolean verified) { this.verified = verified; }
 }
-
