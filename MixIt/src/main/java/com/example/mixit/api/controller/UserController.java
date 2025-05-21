@@ -12,7 +12,7 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/Users")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -37,7 +37,7 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user) {
         user.setId(UUID.randomUUID().toString());
         User savedUser = userRepository.save(user);
-        return ResponseEntity.created(URI.create("/Users/" + savedUser.getId())).body(savedUser);
+        return ResponseEntity.created(URI.create("/users/" + savedUser.getId())).body(savedUser);
     }
 
     @PutMapping("/{id}")
