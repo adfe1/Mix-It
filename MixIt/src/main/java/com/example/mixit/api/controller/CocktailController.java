@@ -1,12 +1,17 @@
 package com.example.mixit.api.controller;
 
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+import com.example.mixit.api.model.Cocktail;
 import com.example.mixit.service.CocktailService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
+@RequestMapping("/api")
 public class CocktailController {
 
     private final CocktailService cocktailService;
@@ -16,7 +21,10 @@ public class CocktailController {
     }
 
     @GetMapping("/cocktails")
-    public Mono<String> getCocktailsByLetter(@RequestParam String letter) {
-        return cocktailService.fetchCocktailsByFirstLetter(letter);
+    public ResponseEntity<Map<String, Object>> searchCocktails(@RequestParam String search) {
+        List<Cocktail> drinks = cocktailService.search(search);
+        Map<String, Object> response = new HashMap<>();
+        response.put("drinks", drinks);
+        return ResponseEntity.ok(response);
     }
 }

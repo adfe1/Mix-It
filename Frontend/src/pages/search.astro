@@ -1,96 +1,106 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import MixItLayout from "../layouts/MixIt-Layout.astro";
+
+let results = [];
+let searchQuery = "";
+
+if (Astro.request.method === "POST") {
+    const bodyText = await Astro.request.text();
+    const params = new URLSearchParams(bodyText);
+    searchQuery = params.get("search");
+
+    if (searchQuery) {
+        try {
+            const res = await fetch(`http://localhost:8080/api/cocktails?search=${encodeURIComponent(searchQuery)}`);
+            const data = await res.json();
+            results = data?.drinks ?? [];
+        } catch (error) {
+            console.error("Fehler bei der API-Abfrage:", error);
+        }
+    }
+}
 ---
-<MixItLayout
-        title="Search"
-        description="Search"
->
-    <!doctype html>
-    <html lang="en">
-    <body>
+
+<MixItLayout title="Search" description="Suche nach Cocktails">
     <main>
         <div class="Search_Bar">
-            <form>
-                    <input type="search" name="Search" placeholder="Search"/>
-                <button title="Search" type="submit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m14 14l2.5 2.5m-.067 2.025a1.48 1.48 0 1 1 2.092-2.092l3.042 3.042a1.48 1.48 0 1 1-2.092 2.092zM16 9A7 7 0 1 0 2 9a7 7 0 0 0 14 0" color="currentColor"/>
-                    </svg>
+            <form method="post">
+                <input type="text" name="search" placeholder="Suche nach Cocktails..." value={searchQuery} />
+                <button type="submit" title="Search">
+                    🔍
                 </button>
             </form>
         </div>
-        <div class="categories">
-            <button type="button"
-        </div>
+
+        <section class="Results">
+            {searchQuery && (
+                    <>
+                        <h2>Suchergebnisse für: "{searchQuery}"</h2>
+                        {results.length > 0 ? (
+                                <ul>
+                                    {results.map((drink) => (
+                                            <li>{drink.strDrink}</li>
+                                    ))}
+                                </ul>
+                        ) : (
+                                <p>Keine Ergebnisse gefunden.</p>
+                        )}
+                    </>
+            )}
+        </section>
     </main>
-    </body>
-    </html>
+
+    <style>
+        .Search_Bar {
+            max-width: 500px;
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            border-radius: 18px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .Search_Bar form {
+            width: 100%;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .Search_Bar input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            border: 1.5px solid #bfc9d1;
+        }
+
+        .Search_Bar button {
+            padding: 0.7rem 1rem;
+            background: #5a77e2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .Results {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .Results ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .Results li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
 </MixItLayout>
-
-<style>
-    .Search_Bar {
-        max-width: 500px;
-        margin: 4rem auto 0 auto;
-        padding: 2rem 2.5rem;
-        border-radius: 18px;
-        background: #f8fafc;
-        border: 2px solid #e2e8f0;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .Search_Bar form {
-        width: 100%;
-        display: flex;
-        gap: 1rem;
-    }
-
-    .Search_Bar input {
-        flex: 1;
-        resize: none;
-        min-height: 48px;
-        max-height: 120px;
-        border: 1.5px solid #bfc9d1;
-        border-radius: 10px;
-        padding: 0.7rem 1rem;
-        font-size: 1.08rem;
-        background: #fff;
-        color: #22223b;
-        transition: border 0.2s;
-        box-shadow: 0 2px 8px rgba(90,119,226,0.04);
-    }
-
-    .Search_Bar textarea:focus {
-        border: 1.5px solid #5a77e2;
-        outline: none;
-    }
-
-    .Search_Bar button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.7rem 1rem;
-        border: none;
-        border-radius: 10px;
-        background: linear-gradient(90deg, #5a77e2 60%, #7e9be6 100%);
-        color: #fff;
-        cursor: pointer;
-        transition: background 0.2s;
-        box-shadow: 0 2px 8px rgba(90,119,226,0.10);
-        font-size: 1.1rem;
-    }
-
-    .Search_Bar button:hover {
-        background: linear-gradient(90deg, #4a5fd0 60%, #5a77e2 100%);
-    }
-
-    .Search_Bar svg {
-        display: block;
-    }
-</style>

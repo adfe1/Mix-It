@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 const res = await fetch("http://localhost:8080/users");
-const users = await res.json(); // ← make sure this is an array
+const users = await res.json();
 ---
 
 
@@ -31,7 +31,7 @@ const users = await res.json(); // ← make sure this is an array
         </button>
         <button type="button" name="Logout">
             Logout
-        </button>
+        </button>users
     </div>
     ))}
 </main>
