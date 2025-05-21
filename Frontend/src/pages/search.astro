@@ -1,24 +1,24 @@
 ---
 import MixItLayout from "../layouts/MixIt-Layout.astro";
 
-let results = [];
 let searchQuery = "";
+let results = [];
+let favorites = [];
 
 if (Astro.request.method === "POST") {
     const bodyText = await Astro.request.text();
     const params = new URLSearchParams(bodyText);
-    searchQuery = params.get("search");
+    searchQuery = params.get("search") ?? "";
 
     if (searchQuery) {
-        try {
-            const res = await fetch(`http://localhost:8080/api/cocktails?search=${encodeURIComponent(searchQuery)}`);
-            const data = await res.json();
-            results = data?.drinks ?? [];
-        } catch (error) {
-            console.error("Fehler bei der API-Abfrage:", error);
-        }
+        const res = await fetch(`http://localhost:8080/api/cocktails/search?query=${encodeURIComponent(searchQuery)}`);
+        const data = await res.json();
+        results = data.drinks ?? [];
     }
 }
+
+const favRes = await fetch('http://localhost:8080/api/favorites');
+favorites = await favRes.json();
 ---
 
 <MixItLayout title="Search" description="Suche nach Cocktails">
@@ -38,8 +38,15 @@ if (Astro.request.method === "POST") {
                         <h2>Suchergebnisse für: "{searchQuery}"</h2>
                         {results.length > 0 ? (
                                 <ul>
-                                    {results.map((drink) => (
-                                            <li>{drink.strDrink}</li>
+                                    {results.map(drink => (
+                                            <li>
+                                                {drink.strDrink}
+                                                <form method="post" action={`/api/favorites/${drink.idDrink}`} style="display:inline;">
+                                                    <button class="fav-btn" formaction={`/api/favorites/${drink.idDrink}?_method=${favorites.includes(drink.idDrink) ? "delete" : "post"}`} formmethod="post">
+                                                        {favorites.includes(drink.idDrink) ? "★ Entfernen" : "☆ Favorit"}
+                                                    </button>
+                                                </form>
+                                            </li>
                                     ))}
                                 </ul>
                         ) : (

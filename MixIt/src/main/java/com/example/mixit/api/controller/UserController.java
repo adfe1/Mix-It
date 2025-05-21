@@ -1,5 +1,4 @@
 package com.example.mixit.api.controller;
-
 import com.example.mixit.api.model.User;
 import com.example.mixit.api.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,9 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    // Alle Benutzer abrufen
-    @GetMapping
-    public ResponseEntity<List<User>> allUsers() {
-        return ResponseEntity.ok(userRepository.findAll());
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+       return ResponseEntity.ok(userRepository.findAll());
     }
 
     // Benutzer per ID abrufen

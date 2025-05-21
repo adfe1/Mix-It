@@ -2,29 +2,21 @@ package com.example.mixit.api.controller;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-import com.example.mixit.api.model.Cocktail;
-import com.example.mixit.service.CocktailService;
-
+@CrossOrigin(origins = "http://localhost:4321") // Astro-Dev-Port!
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/cocktails")
 public class CocktailController {
 
-    private final CocktailService cocktailService;
-
-    public CocktailController(CocktailService cocktailService) {
-        this.cocktailService = cocktailService;
-    }
-
-    @GetMapping("/cocktails")
-    public ResponseEntity<Map<String, Object>> searchCocktails(@RequestParam String search) {
-        List<Cocktail> drinks = cocktailService.search(search);
-        Map<String, Object> response = new HashMap<>();
-        response.put("drinks", drinks);
+    @GetMapping("/search")
+    public ResponseEntity<?> searchCocktails(@RequestParam String query) {
+        String url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s="
+                + URLEncoder.encode(query, StandardCharsets.UTF_8);
+        RestTemplate restTemplate = new RestTemplate();
+        Object response = restTemplate.getForObject(url, Object.class);
         return ResponseEntity.ok(response);
     }
 }
