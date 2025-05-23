@@ -1,9 +1,26 @@
 ---
 import MixItLayout from "../layouts/MixIt-Layout.astro";
 import {SITE_DESCRIPTION, SITE_TITLE} from "../consts";
-import Footer from "../components/Footer.astro";
-import Header from "../components/Header.astro";
-import BaseHead from "../components/BaseHead.astro";
+let message = "";
+
+if (Astro.request.method === "POST") {
+    const form = await Astro.request.formData();
+    const username = form.get("email");
+    const password = form.get("password");
+
+    const response = await fetch("http://localhost:8080/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+    });
+
+    if (response.ok) {
+        message = "Registrierung erfolgreich!";
+    } else {
+        const error = await response.text();
+        message = `Fehler: ${error}`;
+    }
+}
 ---
 <MixItLayout description="Register">
     <html lang="en">
@@ -18,13 +35,11 @@ import BaseHead from "../components/BaseHead.astro";
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" placeholder="Passwort" minlength="4" maxlength="12" required />
 
-                <label for="password2">Reapeat Password:</label>
-                <input type="password" id="password2" name="password2" placeholder="Passwort bestätigen" minlength="4" maxlength="12" required />
-
                 <button type="submit">
                     Registrieren
                 </button>
             </form>
+            {message && <p>{message}</p>}
         </div>
     </main>
     </body>

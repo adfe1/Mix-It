@@ -1,28 +1,26 @@
 package com.example.mixit.api.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "Users")
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
-    private String name;
     private String email;
     private int age;
     private String password;
     private boolean verified;
+    private String username;
 
     public User() {
         this.id = java.util.UUID.randomUUID().toString();
     }
 
-    public User(String id, String name, String email, int age, String password, boolean verified) {
+    public User(String id, String email, int age, String password, boolean verified) {
         this.id = id;
-        this.name = name;
         this.email = email;
         this.age = age;
         this.password = password;
@@ -33,8 +31,6 @@ public class User {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -45,6 +41,10 @@ public class User {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public boolean isVerified() { return verified; }
-    public void setVerified(boolean verified) { this.verified = verified; }
+    public boolean isVerified() {
+        return verified;
+    }
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
 }

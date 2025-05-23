@@ -3,7 +3,10 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+const res = await fetch("http://localhost:8080/users");
+const users = await res.json();
 ---
+
 
 <!doctype html>
 <html lang="en">
@@ -13,12 +16,14 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 <body>
 <Header />
 <main>
+
+    {Array.isArray(users) && users.map(user => (
     <div class="account-Info">
-        <h1>Your Account:</h1>
-        <p>Name: {}</p>
-        <p>E-mail:{}</p>
-        <p>Age:{}</p>
-        <p>Passwort:{}</p>
+        <h1>Account</h1>
+        <p>Name: {user.name}</p>
+        <p>E-mail: {user.email}</p>
+        <p>Age: {user.age}</p>
+        <p>Passwort: {user.password}</p>
     </div>
     <div class="butto">
         <button type="button" name="reset-Password">
@@ -26,9 +31,9 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
         </button>
         <button type="button" name="Logout">
             Logout
-        </button>
+        </button>users
     </div>
-
+    ))}
 </main>
 <Footer />
 </body>
