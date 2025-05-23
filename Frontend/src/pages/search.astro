@@ -1,62 +1,72 @@
 ---
 import MixItLayout from "../layouts/MixIt-Layout.astro";
+import fs from "fs/promises";
 
 let searchQuery = "";
 let results = [];
-let favorites = [];
 
 if (Astro.request.method === "POST") {
     const bodyText = await Astro.request.text();
     const params = new URLSearchParams(bodyText);
-    searchQuery = params.get("/cocktails") ?? "";
+    searchQuery = params.get("search") ?? "";
 
     if (searchQuery) {
         const res = await fetch(`http://localhost:8080/cocktails?query=${encodeURIComponent(searchQuery)}`);
         const data = await res.json();
         results = data.drinks ?? [];
+
+        try {
+            await fs.writeFile(new URL("../data.json", import.meta.url), JSON.stringify(results, null, 1));
+            console.log("Datei erfolgreich geschrieben!");
+        } catch (err) {
+            console.error("Fehler beim Schreiben:", err);
+        }
     }
 }
 
 const { default: data } = await import('../data.json');
-console.log("DEBUG DATA:", data);
 ---
-
 <MixItLayout title="Search" description="Suche nach Cocktails">
     <main>
-        <div class="Search_Bar">
-            <form method="post">
-                <input type="text" name="search" placeholder="Suche nach Cocktails..." value={searchQuery} />
-                <button type="submit" title="Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314"/></svg>
-                </button>
-            </form>
-            <div id="results">
+        <div class="container">
+            <div class="categories">
+                <h4>Kategorien</h4>
+                <p>Non-Alcoholic <input type="checkbox" name="category" value="Non_Alcoholic" /></p>
+                <p>Ordinary Drink <input type="checkbox" name="category" value="Ordinary_Drink" /></p>
+                <p>Cocktail Drink <input type="checkbox" name="category" value="Cocktail_Drink" /></p>
+                <p>Cocktail Glass <input type="checkbox" name="category" value="Cocktail_Glass" /></p>
+                <p>Champagne Glass <input type="checkbox" name="category" value="Champagne_Glass" /></p>
+            </div>
 
-                {data.drinks.map(item => (
-                        <div class="card" data-title={item.strDrink.toLowerCase()}>
-                            <h3>{item.strDrink}</h3>
-                            <img src={item.strDrinkThumb} width="600px" height="600px"/>
-                            <p>{item.strGlass}</p>
-                            <p>{item.strInstructions}</p>
-                            <p>{item.strIngredient1}{item.strMeasure1}</p>
-                            <p>{item.strIngredient2}{item.strMeasure2}</p>
-                            <p>{item.strIngredient3}{item.strMeasure3}</p>
-                            <p>{item.strIngredient4}{item.strMeasure4}</p>
-                            <p>{item.strIngredient5}{item.strMeasure5}</p>
-                            <p>{item.strIngredient6}{item.strMeasure6}</p>
-                            <p>{item.strIngredient7}{item.strMeasure7}</p>
-                            <p>{item.strIngredient8}{item.strMeasure8}</p>
-                            <p>{item.strIngredient9}{item.strMeasure9}</p>
-                            <p>{item.strIngredient10}{item.strMeasure10}</p>
-                            <p>{item.strIngredient11}{item.strMeasure11}</p>
-                            <p>{item.strIngredient12}{item.strMeasure12}</p>
-                            <p>{item.strIngredient13}{item.strMeasure13}</p>
-                            <p>{item.strIngredient14}{item.strMeasure14}</p>
-                            <p>{item.strIngredient15}{item.strMeasure15}</p>
-                        </div>
-                ))}
+            <div class="Search_Bar">
+                <form method="post">
+                    <input id="searchInput" type="text" name="search" placeholder="Suche nach Cocktails..." value={searchQuery} />
+                    <button type="submit" title="Search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314"/>
+                        </svg>
+                    </button>
+                </form>
+
+                <div id="results">
+                    {data.drinks.map(item => (
+                            <div class="card" data-title={item.strDrink.toLowerCase()}>
+                                <h3>{item.strDrink}</h3>
+                                <img src={item.strDrinkThumb} width="600px" height="600px" />
+                                <p>{item.strGlass}</p>
+                                <p>{item.strInstructions}</p>
+                                {[...Array(15)].map((_, i) => {
+                                    const ingredient = item[`strIngredient${i + 1}`];
+                                    const measure = item[`strMeasure${i + 1}`];
+                                    return ingredient ? <p>{ingredient} {measure}</p> : null;
+                                })}
+                            </div>
+                    ))}
+                </div>
             </div>
         </div>
+
         <script type="module">
             function filterResults() {
                 const input = document.getElementById("searchInput").value.toLowerCase();
@@ -67,22 +77,40 @@ console.log("DEBUG DATA:", data);
                     card.style.display = title.includes(input) ? "block" : "none";
                 });
             }
-        </script>
 
+            document.getElementById("searchInput")?.addEventListener("input", filterResults);
+        </script>
     </main>
 
     <style>
-        .Search_Bar {
-            max-width: 500px;
-            margin: 4rem auto 2rem;
+        .container {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .categories {
+            flex: 1;
+            max-width: 300px;
+            margin-top: 4rem;
             padding: 2rem;
             border-radius: 18px;
             background: #f8fafc;
             border: 2px solid #e2e8f0;
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
+        }
+
+        .Search_Bar {
+            flex: 2;
+            max-width: 800px;
+            margin-top: 4rem;
+            padding: 2rem;
+            border-radius: 18px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
         }
 
         .Search_Bar form {
@@ -92,7 +120,7 @@ console.log("DEBUG DATA:", data);
         }
 
         .Search_Bar input {
-            flex: 1;
+            flex: 2;
             padding: 0.7rem 1rem;
             font-size: 1.1rem;
             border-radius: 10px;
@@ -108,26 +136,25 @@ console.log("DEBUG DATA:", data);
             cursor: pointer;
         }
 
-        .Results {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 1rem;
+        #results {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
-        .Results ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .Results li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #ccc;
-        }
         .card {
             border: 1px solid #ccc;
             border-radius: 8px;
             padding: 1rem;
-            margin: 0.5rem 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 1rem 0;
         }
     </style>
 </MixItLayout>
