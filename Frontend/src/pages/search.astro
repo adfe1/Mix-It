@@ -17,8 +17,8 @@ if (Astro.request.method === "POST") {
     }
 }
 
-const favRes = await fetch('http://localhost:8080/api/favorites');
-favorites = await favRes.json();
+const { default: data } = await import('../data.json');
+console.log("DEBUG DATA:", data);
 ---
 
 <MixItLayout title="Search" description="Suche nach Cocktails">
@@ -27,34 +27,48 @@ favorites = await favRes.json();
             <form method="post">
                 <input type="text" name="search" placeholder="Suche nach Cocktails..." value={searchQuery} />
                 <button type="submit" title="Search">
-                    🔍
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314"/></svg>
                 </button>
             </form>
-        </div>
+            <div id="results">
 
-        <section class="Results">
-            {searchQuery && (
-                    <>
-                        <h2>Suchergebnisse für: "{searchQuery}"</h2>
-                        {results.length > 0 ? (
-                                <ul>
-                                    {results.map(drink => (
-                                            <li>
-                                                {drink.strDrink}
-                                                <form method="post" action={`/api/favorites/${drink.idDrink}`} style="display:inline;">
-                                                    <button class="fav-btn" formaction={`/api/favorites/${drink.idDrink}?_method=${favorites.includes(drink.idDrink) ? "delete" : "post"}`} formmethod="post">
-                                                        {favorites.includes(drink.idDrink) ? "★ Entfernen" : "☆ Favorit"}
-                                                    </button>
-                                                </form>
-                                            </li>
-                                    ))}
-                                </ul>
-                        ) : (
-                                <p>Keine Ergebnisse gefunden.</p>
-                        )}
-                    </>
-            )}
-        </section>
+                {data.drinks.map(item => (
+                        <div class="card" data-title={item.strDrink.toLowerCase()}>
+                            <h3>{item.strDrink}</h3>
+                            <img src={item.strDrinkThumb} width="600px" height="600px"/>
+                            <p>{item.strGlass}</p>
+                            <p>{item.strInstructions}</p>
+                            <p>{item.strIngredient1}{item.strMeasure1}</p>
+                            <p>{item.strIngredient2}{item.strMeasure2}</p>
+                            <p>{item.strIngredient3}{item.strMeasure3}</p>
+                            <p>{item.strIngredient4}{item.strMeasure4}</p>
+                            <p>{item.strIngredient5}{item.strMeasure5}</p>
+                            <p>{item.strIngredient6}{item.strMeasure6}</p>
+                            <p>{item.strIngredient7}{item.strMeasure7}</p>
+                            <p>{item.strIngredient8}{item.strMeasure8}</p>
+                            <p>{item.strIngredient9}{item.strMeasure9}</p>
+                            <p>{item.strIngredient10}{item.strMeasure10}</p>
+                            <p>{item.strIngredient11}{item.strMeasure11}</p>
+                            <p>{item.strIngredient12}{item.strMeasure12}</p>
+                            <p>{item.strIngredient13}{item.strMeasure13}</p>
+                            <p>{item.strIngredient14}{item.strMeasure14}</p>
+                            <p>{item.strIngredient15}{item.strMeasure15}</p>
+                        </div>
+                ))}
+            </div>
+        </div>
+        <script type="module">
+            function filterResults() {
+                const input = document.getElementById("searchInput").value.toLowerCase();
+                const cards = document.querySelectorAll("#results .card");
+
+                cards.forEach(card => {
+                    const title = card.dataset.title;
+                    card.style.display = title.includes(input) ? "block" : "none";
+                });
+            }
+        </script>
+
     </main>
 
     <style>
@@ -108,6 +122,12 @@ favorites = await favRes.json();
         .Results li {
             padding: 0.5rem 0;
             border-bottom: 1px solid #ccc;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
         }
     </style>
 </MixItLayout>

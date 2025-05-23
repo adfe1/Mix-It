@@ -1,17 +1,21 @@
-// Daten holen (GET)
-fetch('http://localhost:8080/api/items')
-    .then(res => res.json())
-    .then(data => {
+import fs from 'fs';
+import fetch from 'node-fetch'; // Bei Node 18+ ist fetch eingebaut, sonst musst du node-fetch installieren
 
-    });
+const API_URL = 'http://localhost:8080/api/items'; // Deine API-URL
+const OUTPUT_FILE = '../data.json';     // Zielpfad (z. B. für Astro)
 
-// Daten senden (POST)
-fetch('http://localhost:8080/api/items', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Neues Item' })
-})
-    .then(res => res.json())
-    .then(data => {
-        // Antwort verarbeiten
-    });
+async function fetchAndSaveJSON() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
+
+        const data = await response.json();
+
+        fs.writeFileSync(OUTPUT_FILE, JSON.stringify(data, null, 2), 'utf8');
+        console.log('Datei gespeichert:', OUTPUT_FILE);
+    } catch (error) {
+        console.error('Fehler beim Abrufen oder Speichern:', error);
+    }
+}
+
+fetchAndSaveJSON();
