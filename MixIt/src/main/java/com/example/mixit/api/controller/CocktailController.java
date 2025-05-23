@@ -16,7 +16,7 @@ public class CocktailController {
     }
 
     @GetMapping("/cocktails")
-    public Mono<String> getCocktails(@RequestParam(defaultValue = "a") String querry) {
+    public Mono<String> getCocktails(@RequestParam() String querry) {
         return cocktailService.fetchCocktails(querry);
     }
 }

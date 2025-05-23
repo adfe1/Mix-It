@@ -3,43 +3,26 @@ import MixItLayout from "../layouts/MixIt-Layout.astro";
 import fs from "fs/promises";
 
 let searchQuery = "";
-let results = [];
+let results = { drinks: [] };
 
-if (Astro.request.method === "POST") {
-    const bodyText = await Astro.request.text();
-    const params = new URLSearchParams(bodyText);
-    searchQuery = params.get("search") ?? "";
+searchQuery = Astro.url.searchParams.get("search") ?? "";
 
-    if (searchQuery) {
-        const res = await fetch(`http://localhost:8080/cocktails?query=${encodeURIComponent(searchQuery)}`);
-        const data = await res.json();
-        results = data.drinks ?? [];
+console.log(searchQuery, Astro.url);
 
-        try {
-            await fs.writeFile(new URL("../data.json", import.meta.url), JSON.stringify(results, null, 1));
-            console.log("Datei erfolgreich geschrieben!");
-        } catch (err) {
-            console.error("Fehler beim Schreiben:", err);
-        }
-    }
+if (searchQuery) {
+    const res = await fetch(`http://localhost:8080/cocktails?querry=${encodeURIComponent(searchQuery)}`);
+    const data = await res.json();
+    results = data ?? { drinks: [] };
 }
 
-const { default: data } = await import('../data.json');
+console.log(results);
+
 ---
 <MixItLayout title="Search" description="Suche nach Cocktails">
     <main>
-        <div class="container">
-            <div class="categories">
-                <h4>Kategorien</h4>
-                <p>Non-Alcoholic <input type="checkbox" name="category" value="Non_Alcoholic" /></p>
-                <p>Ordinary Drink <input type="checkbox" name="category" value="Ordinary_Drink" /></p>
-                <p>Cocktail Drink <input type="checkbox" name="category" value="Cocktail_Drink" /></p>
-                <p>Cocktail Glass <input type="checkbox" name="category" value="Cocktail_Glass" /></p>
-                <p>Champagne Glass <input type="checkbox" name="category" value="Champagne_Glass" /></p>
-            </div>
 
             <div class="Search_Bar">
-                <form method="post">
+                <form method="get">
                     <input id="searchInput" type="text" name="search" placeholder="Suche nach Cocktails..." value={searchQuery} />
                     <button type="submit" title="Search">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -50,7 +33,7 @@ const { default: data } = await import('../data.json');
                 </form>
 
                 <div id="results">
-                    {data.drinks.map(item => (
+                    {results.drinks && results.drinks.map(item => (
                             <div class="card" data-title={item.strDrink.toLowerCase()}>
                                 <h3>{item.strDrink}</h3>
                                 <img src={item.strDrinkThumb} width="600px" height="600px" />
@@ -63,11 +46,14 @@ const { default: data } = await import('../data.json');
                                 })}
                             </div>
                     ))}
+                    {!results.drinks && (
+                        <span>lol nö</span>
+                    )}
                 </div>
             </div>
-        </div>
 
-        <script type="module">
+
+        <script>
             function filterResults() {
                 const input = document.getElementById("searchInput").value.toLowerCase();
                 const cards = document.querySelectorAll("#results .card");
@@ -90,17 +76,6 @@ const { default: data } = await import('../data.json');
             gap: 2rem;
         }
 
-        .categories {
-            flex: 1;
-            max-width: 300px;
-            margin-top: 4rem;
-            padding: 2rem;
-            border-radius: 18px;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
 
         .Search_Bar {
             flex: 2;
