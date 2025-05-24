@@ -1,25 +1,24 @@
 ---
 import MixItLayout from "../layouts/MixIt-Layout.astro";
-import {SITE_DESCRIPTION, SITE_TITLE} from "../consts";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 
 let message = "";
 let email = "";
 let password = "";
 let username = "";
-let role = "";
+let role = [];
 
 if (Astro.request.method === "POST") {
     const form = await Astro.request.formData();
     email = form.get("email") || "";
     password = form.get("password") || "";
     username = form.get("username") || "";
-    role = "user"
-
+    role = ["user","mod"]; // ✅ send as array, not string
 
     const response = await fetch("http://localhost:8080/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, username,role })
+        body: JSON.stringify({ email, password, username, role }),
     });
 
     if (response.ok) {
@@ -29,10 +28,9 @@ if (Astro.request.method === "POST") {
         message = `Fehler: ${error}`;
     }
 }
-console.log(email, password,username,Astro.url);
 ---
 
-<MixItLayout description="Register" title ="Register">
+<MixItLayout description="Register" title="Register">
     <html lang="en">
     <body>
     <main>
@@ -40,24 +38,52 @@ console.log(email, password,username,Astro.url);
             <h2>Register</h2>
             <form method="post">
                 <label for="email">E-Mail:</label>
-                <input type="email" placeholder="E-Mail-Adresse" value= {email} required />
+                <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="E-Mail-Adresse"
+                        value={email}
+                        required
+                        autocomplete="email"
+                        autofocus
+                />
 
                 <label for="password">Password:</label>
-                <input type="password" id="password"  placeholder="Passwort" minlength="4" maxlength="12"  value = {password} required/>
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Passwort"
+                        minlength="4"
+                        maxlength="12"
+                        value={password}
+                        required
+                        autocomplete="new-password"
+                />
 
-                <label for="firstName">First-Name</label>
-                <input type="text" name ="username" placeholder="Username" value= {username} required />
+                <label for="username">Username:</label>
+                <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Username"
+                        value={username}
+                        required
+                        autocomplete="username"
+                />
 
-                <button type="submit">
-                    Registrieren
-                </button>
+                <button type="submit">Registrieren</button>
             </form>
+
             {message && <p>{message}</p>}
         </div>
     </main>
     </body>
     </html>
 </MixItLayout>
+
+
 
 <style>
     .Register {
