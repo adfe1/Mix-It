@@ -6,50 +6,60 @@ let results = { drinks: [] };
 
 searchQuery = Astro.url.searchParams.get("search") ?? "";
 
-// console.log(searchQuery, Astro.url);
-
 if (searchQuery) {
-    const res = await fetch(`http://localhost:8080/cocktails?querry=${encodeURIComponent(searchQuery)}`);
-    const data = await res.json();
-    results = data ?? { drinks: [] };
+    try {
+        const res = await fetch(`http://localhost:8080/api/auth/cocktails?querry=${encodeURIComponent(searchQuery)}`, {
+            headers: {
+                "Authorization": "1NmEMBLbz0BXjeZ1SW1C"
+            }
+        });
+
+        if (!res.ok) {
+            throw new Error(`API responded with status ${res.status}`);
+        }
+
+        const data = await res.json();
+        results = data ?? { drinks: [] };
+    } catch (error) {
+        console.error("Error fetching search results:", error);
+        results = { drinks: [] };
+    }
 }
-
-// console.log(results);
-
 ---
+
 <MixItLayout title="Search" description="Search for Cocktails">
     <main>
+        <div class="Search_Bar">
+            <form method="get">
+                <input id="searchInput" type="text" name="search" placeholder="search for Cocktails..." value={searchQuery} />
+                <button type="submit" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314"/>
+                    </svg>
+                </button>
+            </form>
 
-            <div class="Search_Bar">
-                <form method="get">
-                    <input id="searchInput" type="text" name="search" placeholder="search for Cocktails..." value={searchQuery} />
-                    <button type="submit" title="Search">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314"/>
-                        </svg>
-                    </button>
-                </form>
-
-                <div id="results">
-                    {results.drinks && results.drinks.map(item => (
-                            <div class="card" data-title= {item.strDrink.toLowerCase()}>
-                                <h3> {item.strDrink} </h3>
-                                <img src= {item.strDrinkThumb} width="600px" height="600px" />
-                                <p> {item.strGlass} </p>
-                                <p> {item.strInstructions} </p>
+            <div id="results">
+                {results.drinks && results.drinks.length > 0 ? (
+                    results.drinks.map(item => (
+                            <div class="card" data-title={item.strDrink.toLowerCase()}>
+                                <h3>{item.strDrink}</h3>
+                                <img src={item.strDrinkThumb} width="600px" height="600px" />
+                                <p>{item.strGlass}</p>
+                                <p>{item.strInstructions}</p>
                                 {[...Array(15)].map((_, i) => {
                                     const ingredient = item[`strIngredient${i + 1}`];
                                     const measure = item[`strMeasure${i + 1}`];
                                     return ingredient ? <p>{ingredient} {measure}</p> : null;
                                 })}
                             </div>
-                    ))}
-                    {!results.drinks && (
+                    ))
+                ) : (
                         <span>Drink does not exist in database</span>
-                    )}
-                </div>
+                )}
             </div>
+        </div>
 
         <script>
             function filterResults() {
@@ -65,8 +75,9 @@ if (searchQuery) {
             document.getElementById("searchInput")?.addEventListener("input", filterResults);
         </script>
     </main>
+</MixItLayout>
 
-    <style>
+<style>
         .container {
             padding: 20px;
             display: flex;

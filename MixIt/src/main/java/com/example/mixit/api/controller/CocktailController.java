@@ -15,7 +15,7 @@ public class CocktailController {
         this.cocktailService = cocktailService;
     }
 
-    @GetMapping("/cocktails")
+    @GetMapping("/api/auth/cocktails")
     public Mono<String> getCocktails(@RequestParam() String querry) {
         return cocktailService.fetchCocktails(querry);
     }

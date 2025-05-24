@@ -5,6 +5,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 let message = "";
 let username = "";
 let password = "";
+let redirect = false;
 
 if (Astro.request.method === "POST") {
     const body = await Astro.request.formData();
@@ -14,12 +15,13 @@ if (Astro.request.method === "POST") {
     const response = await fetch("http://localhost:8080/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username, password }), // ✅ Spring expects `username`, not `email`
+        body: JSON.stringify({ username, password }),
     });
 
     if (response.ok) {
         const result = await response.json();
         message = result.message || "Login erfolgreich!";
+        redirect = true;
     } else {
         const error = await response.text();
         message = `Fehler: ${error}`;
@@ -66,6 +68,8 @@ if (Astro.request.method === "POST") {
 
             {message && <p>{message}</p>}
         </div>
+
+        {redirect && <script>window.location.href = "/account";</script>}
     </main>
     </body>
     </html>
