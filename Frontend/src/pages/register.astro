@@ -5,20 +5,21 @@ import {SITE_DESCRIPTION, SITE_TITLE} from "../consts";
 let message = "";
 let email = "";
 let password = "";
-let firstName = "";
-let lastName = "";
+let username = "";
+let role = "";
 
 if (Astro.request.method === "POST") {
     const form = await Astro.request.formData();
     email = form.get("email") || "";
     password = form.get("password") || "";
-    firstName = form.get("firstName") || "";
-    lastName = form.get("lastName") || "";
+    username = form.get("username") || "";
+    role = "user"
 
-    const response = await fetch("http://localhost:8080/register", {
+
+    const response = await fetch("http://localhost:8080/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, firstName, lastName })
+        body: JSON.stringify({ email, password, username,role })
     });
 
     if (response.ok) {
@@ -28,10 +29,10 @@ if (Astro.request.method === "POST") {
         message = `Fehler: ${error}`;
     }
 }
-console.log(email, password,firstName,lastName,Astro.url);
+console.log(email, password,username,Astro.url);
 ---
 
-<MixItLayout description="Register">
+<MixItLayout description="Register" title ="Register">
     <html lang="en">
     <body>
     <main>
@@ -45,10 +46,7 @@ console.log(email, password,firstName,lastName,Astro.url);
                 <input type="password" id="password"  placeholder="Passwort" minlength="4" maxlength="12"  value = {password} required/>
 
                 <label for="firstName">First-Name</label>
-                <input type="text" name ="firstName" placeholder="First Name" value= {firstName} required />
-
-                <label for="lastName">Last-Name</label>
-                <input type="text" id="lastName" placeholder ="Last Name" value = {lastName} required/>
+                <input type="text" name ="username" placeholder="Username" value= {username} required />
 
                 <button type="submit">
                     Registrieren

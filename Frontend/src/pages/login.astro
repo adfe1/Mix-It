@@ -8,7 +8,7 @@ if (Astro.request.method === "POST") {
     const username = body.get("email");
     const password = body.get("password");
 
-    const response = await fetch("http://localhost:8080/api/login", {
+    const response = await fetch("http://localhost:8080/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -18,7 +18,7 @@ if (Astro.request.method === "POST") {
     message = result.message;
 }
 ---
-<MixItLayout>
+<MixItLayout title ="Login">
     <html lang="en">
     <body>
     <main>

@@ -14,7 +14,7 @@ public class CocktailService {
                     return webClient.get()
                             .uri(uriBuilder -> uriBuilder
                                     .path("/search.php")
-                                    .queryParam("f", querry) // <-- RICHTIG
+                                    .queryParam("f", querry)
                                     .build())
                             .retrieve()
                             .bodyToMono(String.class);
@@ -23,7 +23,7 @@ public class CocktailService {
                     return webClient.get()
                             .uri(uriBuilder -> uriBuilder
                                     .path("/search.php")
-                                    .queryParam("s", querry) // <-- RICHTIG
+                                    .queryParam("s", querry)
                                     .build())
                             .retrieve()
                             .bodyToMono(String.class);
