@@ -1,6 +1,5 @@
 package com.example.mixit.api.security.jwt;
 
-
 import java.security.Key;
 import java.util.Date;
 
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 import com.example.mixit.api.security.services.UserDetailsImpl;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -34,27 +34,38 @@ public class JwtUtils {
 
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, jwtCookie);
-        if (cookie != null) {
-            return cookie.getValue();
-        } else {
-            return null;
-        }
+        return (cookie != null) ? cookie.getValue() : null;
     }
 
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-        ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true).build();
-        return cookie;
+
+        return ResponseCookie.from(jwtCookie, jwt)
+                .path("/")                    // Wider path
+                .httpOnly(true)
+                .secure(false)               // set to true in production
+                .sameSite("Lax")             // or "None" + secure for cross-site
+                .maxAge(24 * 60 * 60)
+                .build();
     }
 
     public ResponseCookie getCleanJwtCookie() {
-        ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
-        return cookie;
+        return ResponseCookie.from(jwtCookie, "")
+                .path("/")
+                .maxAge(0)                                // 💡 Expire immediately
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Lax")
+                .build();
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key()).build()
-                .parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     private Key key() {
@@ -63,7 +74,7 @@ public class JwtUtils {
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
+            Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());

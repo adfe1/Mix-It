@@ -3,37 +3,50 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-const res = await fetch("http://localhost:8080/users");
-const users = await res.json();
+
+const res = await fetch("http://localhost:8080/api/auth/userinfo", {
+    headers: {
+        cookie: Astro.request.headers.get("cookie") || "",
+    },
+    credentials: "include"
+});
+
+let user = null;
+
+if (res.ok) {
+    user = await res.json();
+} else {
+    user = { error: "Not authenticated" };
+}
 ---
-
-
 <!doctype html>
 <html lang="en">
 <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION}/>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 </head>
 <body>
 <Header />
 <main>
-
-    {Array.isArray(users) && users.map(user => (
     <div class="account-Info">
         <h1>Account</h1>
-        <p>Name: {user.name}</p>
-        <p>E-mail: {user.email}</p>
-        <p>Age: {user.age}</p>
-        <p>Passwort: {user.password}</p>
+
+        {user?.error ? (
+                <p>{user.error}</p>
+        ) : (
+                <>
+                    <p>Username: {user.username}</p>
+                    <p>Email: {user.email}</p>
+                    <p>ID: {user.id}</p>
+                    <p>Roles: {user.roles.join(', ')}</p>
+                </>
+        )}
     </div>
+
     <div class="butto">
-        <button type="button" name="reset-Password">
-            Reset Password
-        </button>
-        <button type="button" name="Logout">
-            Logout
-        </button>users
+        <form method="post" action="/api/auth/signout">
+            <button type="submit" name="Logout">Logout</button>
+        </form>
     </div>
-    ))}
 </main>
 <Footer />
 </body>
