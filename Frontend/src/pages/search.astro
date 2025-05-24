@@ -7,7 +7,7 @@ let results = { drinks: [] };
 
 searchQuery = Astro.url.searchParams.get("search") ?? "";
 
-console.log(searchQuery, Astro.url);
+// console.log(searchQuery, Astro.url);
 
 if (searchQuery) {
     const res = await fetch(`http://localhost:8080/cocktails?querry=${encodeURIComponent(searchQuery)}`);
@@ -15,15 +15,15 @@ if (searchQuery) {
     results = data ?? { drinks: [] };
 }
 
-console.log(results);
+// console.log(results);
 
 ---
-<MixItLayout title="Search" description="Suche nach Cocktails">
+<MixItLayout title="Search" description="Search for Cocktails">
     <main>
 
             <div class="Search_Bar">
                 <form method="get">
-                    <input id="searchInput" type="text" name="search" placeholder="Suche nach Cocktails..." value={searchQuery} />
+                    <input id="searchInput" type="text" name="search" placeholder="search for Cocktails..." value={searchQuery} />
                     <button type="submit" title="Search">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -34,11 +34,11 @@ console.log(results);
 
                 <div id="results">
                     {results.drinks && results.drinks.map(item => (
-                            <div class="card" data-title={item.strDrink.toLowerCase()}>
-                                <h3>{item.strDrink}</h3>
-                                <img src={item.strDrinkThumb} width="600px" height="600px" />
-                                <p>{item.strGlass}</p>
-                                <p>{item.strInstructions}</p>
+                            <div class="card" data-title= {item.strDrink.toLowerCase()}>
+                                <h3> {item.strDrink} </h3>
+                                <img src= {item.strDrinkThumb} width="600px" height="600px" />
+                                <p> {item.strGlass} </p>
+                                <p> {item.strInstructions} </p>
                                 {[...Array(15)].map((_, i) => {
                                     const ingredient = item[`strIngredient${i + 1}`];
                                     const measure = item[`strMeasure${i + 1}`];
@@ -47,11 +47,10 @@ console.log(results);
                             </div>
                     ))}
                     {!results.drinks && (
-                        <span>lol nö</span>
+                        <span>Drink does not exist in database</span>
                     )}
                 </div>
             </div>
-
 
         <script>
             function filterResults() {
