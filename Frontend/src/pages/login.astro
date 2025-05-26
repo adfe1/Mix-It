@@ -21,10 +21,11 @@ if (Astro.request.method === "POST") {
         });
 
         if (response.ok) {
+            setState(true)
             try {
                 const result = await response.json();
                 message = result.message || "Login erfolgreich!";
-                setState(true)
+
             } catch (e) {
                 message = "Login erfolgreich, aber keine Antwort erhalten.";
             }

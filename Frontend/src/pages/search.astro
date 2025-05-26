@@ -53,6 +53,7 @@ if (searchQuery) {
                                     const measure = item[`strMeasure${i + 1}`];
                                     return ingredient ? <p>{ingredient} {measure}</p> : null;
                                 })}
+                                <button type="submit" name="save" onclick="">Save</button> //item.idDrink
                             </div>
                     ))
                 ) : (
@@ -62,6 +63,10 @@ if (searchQuery) {
         </div>
 
         <script>
+            function Save (){
+
+
+            }
             function filterResults() {
                 const input = document.getElementById("searchInput").value.toLowerCase();
                 const cards = document.querySelectorAll("#results .card");

@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import {setState} from "./api/IsAuht";
 
 
 const url = new URL('/api/auth/userinfo', 'http://localhost:8080');
@@ -49,7 +50,7 @@ if (res.ok) {
 
     <div class="butto">
         <form method="post" action="http://localhost:8080/api/auth/signout">
-            <button type="submit" name="Logout">Logout</button>
+            <button type="submit" name="Logout" onclick="setState(false)">Logout</button>
         </form>
     </div>
 
