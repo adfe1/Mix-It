@@ -16,8 +16,7 @@ if (Astro.request.method === "POST") {
         const response = await fetch("http://localhost:8080/api/auth/signin", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-            credentials: "include", // Make sure cookie is accepted!
+            body: JSON.stringify({ username, password })
         });
 
         if (response.ok) {
@@ -28,6 +27,13 @@ if (Astro.request.method === "POST") {
                 message = "Login erfolgreich, aber keine Antwort erhalten.";
             }
             redirect = true;
+
+            const cookieHeader = response.headers.get("Set-Cookie")!;
+            const cookieValue = cookieHeader.split("jwt=").pop()!.split(";")[0]!;
+
+            Astro.cookies.set("session", cookieValue, {
+                expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+            });
         } else {
             const errorText = await response.text();
             message = `Fehler: ${errorText}`;

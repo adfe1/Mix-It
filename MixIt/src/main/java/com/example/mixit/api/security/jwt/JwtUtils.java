@@ -32,52 +32,63 @@ public class JwtUtils {
     @Value("${bezkoder.app.jwtCookieName}")
     private String jwtCookie;
 
+    /**
+     * Extract JWT from cookies.
+     */
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, jwtCookie);
         return (cookie != null) ? cookie.getValue() : null;
     }
 
+    /**
+     * Create a JWT cookie to store in the response.
+     */
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
 
         return ResponseCookie.from(jwtCookie, jwt)
-                .path("/")                    // Wider path
+                .path("/")
                 .httpOnly(true)
-                .secure(false)               // set to true in production
-                .sameSite("Lax")             // or "None" + secure for cross-site
-                .maxAge(24 * 60 * 60)
+                .secure(true)
+                .sameSite("Strict")
+                .maxAge(jwtExpirationMs / 1000)
                 .build();
     }
 
+    /**
+     * Clear the JWT cookie (logout).
+     */
     public ResponseCookie getCleanJwtCookie() {
         return ResponseCookie.from(jwtCookie, "")
                 .path("/")
-                .maxAge(0)                                // 💡 Expire immediately
+                .maxAge(0)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Lax")
+                .sameSite("Strict")
                 .build();
     }
 
+    /**
+     * Parse username from JWT token.
+     */
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key())
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
 
-    private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
-    }
-
+    /**
+     * Validate JWT token.
+     */
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(authToken);
+            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);
             return true;
-        } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (SecurityException | MalformedJwtException e) {
+            logger.error("Invalid JWT signature: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             logger.error("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
@@ -89,12 +100,23 @@ public class JwtUtils {
         return false;
     }
 
+    /**
+     * Generate token string from username.
+     */
     public String generateTokenFromUsername(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(key(), SignatureAlgorithm.HS256)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    /**
+     * Decode Base64 secret key.
+     */
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

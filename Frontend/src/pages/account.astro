@@ -4,14 +4,19 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
-const res = await fetch("http://localhost:8080/api/auth/userinfo", {
-    headers: {
-        cookie: Astro.request.headers.get("cookie") || "",
-    },
-    credentials: "include"
+
+const url = new URL('/api/auth/userinfo', 'http://localhost:8080');
+
+const sessionCookie = Astro.cookies.get("session");
+
+const res = await fetch(url.toString(), {
+    method: "POST",
+    body: sessionCookie?.value || ""
 });
 
-let user = null;
+console.log(res);
+
+let user;
 
 if (res.ok) {
     user = await res.json();
@@ -27,23 +32,23 @@ if (res.ok) {
 <body>
 <Header />
 <main>
-    <div class="account-Info">
+    <div class="account-info">
         <h1>Account</h1>
 
         {user.error ? (
                 <p>{user.error}</p>
         ) : (
                 <>
-                    <p>Username: {user.username}</p>
-                    <p>Email: {user.email}</p>
-                    <p>ID: {user.id}</p>
-                    <p>Roles: {user.roles.join(', ')}</p>
+                    <p><strong>Username:</strong> {user.username}</p>
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>ID:</strong> {user.id}</p>
+                    <p><strong>Roles:</strong> {user.roles.join(', ')}</p>
                 </>
         )}
     </div>
 
     <div class="butto">
-        <form method="post" action="/api/auth/signout">
+        <form method="post" action="http://localhost:3000/api/auth/signout">
             <button type="submit" name="Logout">Logout</button>
         </form>
     </div>
