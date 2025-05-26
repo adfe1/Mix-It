@@ -1,6 +1,5 @@
 ---
 import MixItLayout from "../layouts/MixIt-Layout.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 
 let message = "";
 let email = "";
@@ -79,8 +78,8 @@ if (Astro.request.method === "POST") {
             </form>
 
             {message && <p>{message}</p>}
-            {redirect && <script>window.location.href = "/login";</script>}
         </div>
+        {redirect && <script>window.location.href = "/login";</script>}
     </main>
     </body>
     </html>

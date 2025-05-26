@@ -1,5 +1,9 @@
 ---
 import HeaderLink from './HeaderLink.astro';
+import * as url from "node:url";
+
+const sessionCookie = Astro.cookies.get("session");
+
 ---
 
 <header>
@@ -34,15 +38,17 @@ import HeaderLink from './HeaderLink.astro';
 
 		<!-- Add this script before the nav ends -->
 		<script>
+			import {getState} from "../pages/api/IsAuht";
+
 			document.addEventListener("DOMContentLoaded", () => {
 				const navLinks = document.getElementById("nav-links");
-				const isLoggedIn = localStorage.getItem("authToken") !== null; // or sessionStorage if you're using that
+				const isLoggedIn = getState() !== null;
 
 				if (isLoggedIn) {
 					navLinks.innerHTML = `
 						<a href="/">Home</a>
 						<a href="/search">Search</a>
-						<a href="/saved">Saved</a>
+						<a href="/Saved">Saved</a>
 						<a href="/account">Account</a>
 					`;
 				} else {

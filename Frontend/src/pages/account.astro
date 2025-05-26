@@ -14,7 +14,7 @@ const res = await fetch(url.toString(), {
     body: sessionCookie?.value || ""
 });
 
-console.log(res);
+//console.log(res);
 
 let user;
 
@@ -48,10 +48,11 @@ if (res.ok) {
     </div>
 
     <div class="butto">
-        <form method="post" action="http://localhost:3000/api/auth/signout">
+        <form method="post" action="http://localhost:8080/api/auth/signout">
             <button type="submit" name="Logout">Logout</button>
         </form>
     </div>
+
 </main>
 <Footer />
 </body>
