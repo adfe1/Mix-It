@@ -7,6 +7,7 @@ let email = "";
 let password = "";
 let username = "";
 let role = [];
+let redirect = false;
 
 if (Astro.request.method === "POST") {
     const form = await Astro.request.formData();
@@ -27,6 +28,7 @@ if (Astro.request.method === "POST") {
         const error = await response.text();
         message = `Fehler: ${error}`;
     }
+    redirect = true;
 }
 ---
 
@@ -77,6 +79,7 @@ if (Astro.request.method === "POST") {
             </form>
 
             {message && <p>{message}</p>}
+            {redirect && <script>window.location.href = "/login";</script>}
         </div>
     </main>
     </body>
