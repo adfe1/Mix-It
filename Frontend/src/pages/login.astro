@@ -1,7 +1,7 @@
 ---
 import MixItLayout from "../layouts/MixIt-Layout.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
-import {setState} from "./api/IsAuht";
+
 
 let message = "";
 let username = "";
@@ -21,7 +21,6 @@ if (Astro.request.method === "POST") {
         });
 
         if (response.ok) {
-            setState(true)
             try {
                 const result = await response.json();
                 message = result.message || "Login erfolgreich!";

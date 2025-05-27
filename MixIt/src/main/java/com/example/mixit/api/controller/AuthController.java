@@ -128,12 +128,22 @@ public class AuthController {
 
 
     @PostMapping("/signout")
-    public ResponseEntity<?> logoutUser() {
-        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+    public ResponseEntity<MessageResponse> logoutUser() {
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .domain("localhost") // explizit setzen, falls dein Cookie mit Domain gesetzt wurde
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .build();
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new MessageResponse("You've been signed out!"));
     }
+
+
 
     @PostMapping("/userinfo")
     public ResponseEntity<?> getUserInfo(@Valid @RequestBody String jwt) {

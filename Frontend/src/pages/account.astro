@@ -3,28 +3,33 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-import {setState} from "./api/IsAuht";
-
 
 const url = new URL('/api/auth/userinfo', 'http://localhost:8080');
 
 const sessionCookie = Astro.cookies.get("session");
 
-const res = await fetch(url.toString(), {
-    method: "POST",
-    body: sessionCookie?.value || ""
-});
+let user = { error: "Not authenticated" };
 
-//console.log(res);
+try {
+    const res = await fetch(url.toString(), {
+        method: "POST",
+        body: sessionCookie?.value || ""
+    });
 
-let user;
-
-if (res.ok) {
-    user = await res.json();
-} else {
-    user = { error: "Not authenticated" };
+    if (res.ok) {
+        const text = await res.text();
+        if (text) {
+            user = JSON.parse(text);
+        } else {
+            user = { error: "No user data received" };
+        }
+    }
+} catch (e) {
+    console.error('Fehler beim Abrufen der User-Daten:', e);
+    user = { error: "Fehler beim Abrufen der Daten" };
 }
 ---
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -49,13 +54,30 @@ if (res.ok) {
     </div>
 
     <div class="butto">
-        <form method="post" action="http://localhost:8080/api/auth/signout">
-            <button type="submit" name="Logout" onclick="setState(false)">Logout</button>
-        </form>
+        <button id="logout-btn" type="button">Logout</button>
     </div>
-
 </main>
 <Footer />
+
+<script>
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+        try {
+            const res = await fetch('http://localhost:8080/api/auth/signout', {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (res.ok) {
+                window.location.href = '/'; // Zur Hauptseite weiterleiten
+            } else {
+                alert('Logout fehlgeschlagen.');
+            }
+        } catch (error) {
+            console.error('Logout-Fehler:', error);
+            alert('Ein Fehler ist aufgetreten.');
+        }
+    });
+</script>
 </body>
 </html>
 

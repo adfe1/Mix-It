@@ -25,6 +25,7 @@ if (searchQuery) {
         results = { drinks: [] };
     }
 }
+
 ---
 
 <MixItLayout title="Search" description="Search for Cocktails">
@@ -35,7 +36,7 @@ if (searchQuery) {
                 <button type="submit" title="Search">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314"/>
+                              d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314" />
                     </svg>
                 </button>
             </form>
@@ -53,7 +54,7 @@ if (searchQuery) {
                                     const measure = item[`strMeasure${i + 1}`];
                                     return ingredient ? <p>{ingredient} {measure}</p> : null;
                                 })}
-                                <button type="submit" name="save" onclick="">Save</button> //item.idDrink
+                                <button type="button" class="save-button" data-id={item.idDrink}>Save</button>
                             </div>
                     ))
                 ) : (
@@ -62,23 +63,42 @@ if (searchQuery) {
             </div>
         </div>
 
-        <script>
-            function Save (){
+        <script type="module">
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.save-button').forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const drinkId = event.target.dataset.id;
+                        const token = localStorage.getItem("authToken"); // Token aus localStorage
 
+                        if (!token) {
+                            alert("Bitte zuerst einloggen!");
+                            return;
+                        }
 
-            }
-            function filterResults() {
-                const input = document.getElementById("searchInput").value.toLowerCase();
-                const cards = document.querySelectorAll("#results .card");
+                        try {
+                            const response = await fetch("http://localhost:8080/api/save/add", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${token}`
+                                },
+                                body: JSON.stringify({ idDrink: drinkId })
+                            });
 
-                cards.forEach(card => {
-                    const title = card.dataset.title;
-                    card.style.display = title.includes(input) ? "block" : "none";
+                            if (response.ok) {
+                                alert("Drink gespeichert!");
+                            } else {
+                                alert("Fehler beim Speichern.");
+                            }
+                        } catch (error) {
+                            console.error("Fehler beim Speichern:", error);
+                            alert("Fehler beim Speichern.");
+                        }
+                    });
                 });
-            }
-
-            document.getElementById("searchInput")?.addEventListener("input", filterResults);
+            });
         </script>
+
     </main>
 </MixItLayout>
 
