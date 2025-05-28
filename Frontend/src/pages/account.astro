@@ -13,7 +13,7 @@ let user = { error: "Not authenticated" };
 try {
     const res = await fetch(url.toString(), {
         method: "POST",
-        body: sessionCookie?.value || ""
+        body: sessionCookie?.value || "",
     });
 
     if (res.ok) {
@@ -62,13 +62,13 @@ try {
 <script>
     document.getElementById('logout-btn').addEventListener('click', async () => {
         try {
-            const res = await fetch('http://localhost:8080/api/auth/signout', {
+            const res = await fetch('/api/auth/signout', {
                 method: 'POST',
                 credentials: 'include',
             });
 
             if (res.ok) {
-                window.location.href = '/'; // Zur Hauptseite weiterleiten
+                window.location.href = '/';
             } else {
                 alert('Logout fehlgeschlagen.');
             }
@@ -80,6 +80,7 @@ try {
 </script>
 </body>
 </html>
+
 
 <style>
     body{

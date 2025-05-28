@@ -1,6 +1,9 @@
 package com.example.mixit.api.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,19 +131,22 @@ public class AuthController {
 
 
     @PostMapping("/signout")
-    public ResponseEntity<MessageResponse> logoutUser() {
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
-                .domain("localhost") // explizit setzen, falls dein Cookie mit Domain gesetzt wurde
-                .path("/")
-                .maxAge(0)
-                .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
-                .build();
+    public ResponseEntity<MessageResponse> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        // 1. Session invalidieren (wenn existiert)
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new MessageResponse("You've been signed out!"));
+        // 2. Session-Cookie löschen
+        Cookie cookie = new Cookie("JSESSIONID", ""); // oder "session"
+        cookie.setPath("/");           // Muss mit dem ursprünglichen Cookie übereinstimmen
+        cookie.setHttpOnly(true);      // gleiche Einstellungen wie beim Setzen
+        cookie.setMaxAge(0);           // Löscht den Cookie
+        cookie.setSecure(false);       // je nach Umgebung (true bei HTTPS)
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(new MessageResponse("You've been signed out!"));
     }
 
 
