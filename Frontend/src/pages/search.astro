@@ -54,7 +54,7 @@ if (searchQuery) {
                                     const measure = item[`strMeasure${i + 1}`];
                                     return ingredient ? <p>{ingredient} {measure}</p> : null;
                                 })}
-                                <button type="button" class="save-button" data-id={item.idDrink}>Save</button>
+                                <button type="button" class="save-button" value={item.idDrink}>Save</button>
                             </div>
                     ))
                 ) : (
