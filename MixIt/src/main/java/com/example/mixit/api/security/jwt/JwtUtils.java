@@ -32,6 +32,9 @@ public class JwtUtils {
     @Value("${bezkoder.app.jwtCookieName}")
     private String jwtCookie;
 
+    // Flag für lokale Entwicklung (true = Prod mit HTTPS, false = lokal)
+    private final boolean isSecure = false;
+
     /**
      * Extract JWT from cookies.
      */
@@ -44,13 +47,16 @@ public class JwtUtils {
      * Create a JWT cookie to store in the response.
      */
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
-        String jwt = generateTokenFromUsername(userPrincipal.getUsername());
+        String jwt = generateTokenFromUsername(userPrincipal.getUsername()
+        );
+
+
 
         return ResponseCookie.from(jwtCookie, jwt)
                 .path("/")
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
+                .secure(isSecure)             // Für lokale Entwicklung false, sonst true
+                .sameSite("Lax")              // Lax ist weniger restriktiv als Strict
                 .maxAge(jwtExpirationMs / 1000)
                 .build();
     }
@@ -63,8 +69,8 @@ public class JwtUtils {
                 .path("/")
                 .maxAge(0)
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
+                .secure(isSecure)
+                .sameSite("Lax")
                 .build();
     }
 

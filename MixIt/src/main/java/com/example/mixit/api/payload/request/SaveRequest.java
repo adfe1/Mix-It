@@ -1,6 +1,5 @@
 package com.example.mixit.api.payload.request;
 
-
 public class SaveRequest {
     private String idDrink;
 

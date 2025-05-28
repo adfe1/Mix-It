@@ -19,7 +19,17 @@ public class Save {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Save() {}
+    public Save() {
+
+    }
+
+    public Save(Long id ,Long idDrink, User user) {
+        this.idDrink = getIdDrink();
+        this.user = getUser();
+        this.id = getId();
+    }
+
+
 
     // Getter und Setter
     public Long getId() {

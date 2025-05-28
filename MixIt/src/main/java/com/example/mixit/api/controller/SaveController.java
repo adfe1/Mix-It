@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+
 @RestController
 @RequestMapping("/api/save")
-@CrossOrigin(origins = "http://localhost:3000") // Dein Frontend-Port
+@CrossOrigin(origins = "http://localhost:4321", allowCredentials = "true")
 public class SaveController {
 
     @Autowired
@@ -42,4 +44,5 @@ public class SaveController {
         List<Save> saves = saveRepository.findByUser(currentUser);
         return ResponseEntity.ok(saves);
     }
+
 }

@@ -63,30 +63,36 @@ if (searchQuery) {
             </div>
         </div>
 
+
         <script type="module">
+            // Hilfsfunktion: Token aus Cookie auslesen
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
             document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.save-button').forEach(button => {
                     button.addEventListener('click', async (event) => {
-                        const drinkId = event.target.dataset.id;
-                        const token = localStorage.getItem("authToken"); // Token aus localStorage
-
-                        if (!token) {
-                            alert("Bitte zuerst einloggen!");
-                            return;
-                        }
+                        const drinkId = event.target.value;
+                        const token = getCookie('session');  // Name deines JWT-Cookies hier eintragen
 
                         try {
-                            const response = await fetch("http://localhost:8080/api/save/add", {
-                                method: "POST",
+                            const response = await fetch('http://localhost:8080/api/save/add', {
+                                method: 'POST',
                                 headers: {
-                                    "Content-Type": "application/json",
-                                    "Authorization": `Bearer ${token}`
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`  // Token im Header mitsenden
                                 },
-                                body: JSON.stringify({ idDrink: drinkId })
+                                credentials: 'include',
+                                body: JSON.stringify({ idDrink: drinkId }),
                             });
 
                             if (response.ok) {
                                 alert("Drink gespeichert!");
+                            } else if (response.status === 401) {
+                                alert("Bitte zuerst einloggen!");
                             } else {
                                 alert("Fehler beim Speichern.");
                             }
@@ -98,6 +104,7 @@ if (searchQuery) {
                 });
             });
         </script>
+
 
     </main>
 </MixItLayout>
