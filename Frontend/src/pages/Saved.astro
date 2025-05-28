@@ -1,61 +1,16 @@
 ---
-import MixItLayout from "../layouts/MixIt-Layout.astro";
-
-let savedDrinks = [];
-
-try {
-	const res = await fetch("http://localhost:8080/api/save/my", {
-	method: "GET",
-	credentials: "include", // Sends cookies for auth
-    });
-
-	if (!res.ok) {
-	throw new Error(`Failed to fetch saved drinks: ${res.status}`);
-	}
-
-	const saves = await res.json(); // List of { id, idDrink }
-
-	// Optional: fetch cocktail data from cocktail API
-    savedDrinks = await Promise.all(
-	saves.map(async (save) => {
-		const cocktailRes = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${save.idDrink}`);
-		const cocktailData = await cocktailRes.json();
-		return cocktailData.drinks?.[0] ?? null;
-		})
-	);
-
-	// Remove nulls (in case a drink was deleted externally)
-    savedDrinks = savedDrinks.filter(drink => drink !== null);
-	} catch (err) {
-	console.error("Error loading saved drinks:", err);
-	}
+import MixItLayout from '../layouts/MixIt-Layout.astro';
+import SavedDrinks from '../pages/api/Savedrinks.jsx';
 ---
 
 <MixItLayout title="Saved Drinks" description="Your saved cocktails">
 	<main>
 		<h1>My Saved Drinks</h1>
-		{savedDrinks.length > 0 ? (
-			<div class="saved-grid">
-				{savedDrinks.map(drink => (
-					<div class="card">
-						<h3>{drink.strDrink}</h3>
-						<img src={drink.strDrinkThumb} width="300" />
-						<p><strong>Glass:</strong> {drink.strGlass}</p>
-						<p><strong>Instructions:</strong> {drink.strInstructions}</p>
-						{[...Array(15)].map((_, i) => {
-							const ingredient = drink[`strIngredient${i + 1}`];
-							const measure = drink[`strMeasure${i + 1}`];
-							return ingredient ? <p>{ingredient} {measure}</p> : null;
-						})}
-					</div>
-				))}
-			</div>
-		) : (
-			<p>You haven't saved any drinks yet.</p>
-		)}
+		<SavedDrinks client:load />
 	</main>
+</MixItLayout>
 
-	<style>
+<style>
 		.saved-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
