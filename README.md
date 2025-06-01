@@ -4,7 +4,7 @@ in Console:
   - npm install
   - run : npm run dev
 
-to use the database:
+to use the database:  
 1. install docker desktop
 2. install a mysql database in a docker container
 3. add the credetiels and ports an the port in the compose.yml 
@@ -13,9 +13,14 @@ to use the database:
 
 to start backend:
 1. Start docker Container with the mysql database  
-2. 2.Start Springboot
+2. Start Springboot
 
 
 
 
 ![img.png](img.png)
+
+
+
+Debug: 
+-  database is requierd to start the backend
